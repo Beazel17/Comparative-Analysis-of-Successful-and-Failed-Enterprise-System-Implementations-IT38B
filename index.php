@@ -1,7 +1,7 @@
 <?php
 session_start();
 if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
-    header("location: ./public/user/dashboard.php");
+    header("location: dashboard.php");
     exit;
 }
 
@@ -44,7 +44,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             $_SESSION["id"] = $id;
                             $_SESSION["email"] = $email;
 
-                            header("location: ./public/user/dashboard.php");
+                            header("location:dashboard.php");
                         } else{
                             $login_err = "Invalid email or password.";
                         }
