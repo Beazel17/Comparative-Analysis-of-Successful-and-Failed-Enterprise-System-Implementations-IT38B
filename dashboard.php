@@ -1,6 +1,6 @@
 <?php
 session_start();
-if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: index.php");
     exit;
 }
@@ -54,17 +54,6 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
             padding: 5px;
             width: 300px;
         }
-        .action-buttons button {
-            margin: 10px;
-            background-color: #00e5ff;
-            color: black;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-        }
-        .action-buttons button:hover {
-            background-color: #18ffff;
-        }
         .section {
             margin-top: 30px;
             text-align: center;
@@ -90,8 +79,8 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     <h4 style="text-align: center;">MediCare</h4>
     <button onclick="showSection('patient')">Patient Management</button>
     <button onclick="showSection('appointment')">Appointments</button>
-    <button onclick="location.href='#'">Prescriptions</button>
-    <button onclick="location.href='#'">Billing & Payments</button>
+    <button onclick="showSection('prescription')">Prescriptions</button>
+    <button onclick="showSection('billing')">Billing & Payments</button>
     <button onclick="location.href='logout.php'">Logout</button>
 </div>
 
@@ -105,25 +94,38 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         </div>
     </div>
 
-    <!-- Patient Buttons -->
+    <!-- Patient Section -->
     <div id="patient-section" class="section">
         <button onclick="location.href='add_patient.php'">Add Patient</button>
         <button onclick="location.href='view_patients.php'">View Patients</button>
         <button onclick="location.href='edit_delete_patient.php'">Edit/Delete Patient</button>
     </div>
 
-    <!-- Appointments Buttons -->
+    <!-- Appointment Section -->
     <div id="appointment-section" class="section">
         <button onclick="location.href='schedule.php'">Schedule Appointment</button>
         <button onclick="location.href='view_appointments.php'">View Appointments</button>
-        
+    </div>
+
+    <!-- Prescription Section -->
+    <div id="prescription-section" class="section">
+        <button onclick="location.href='add_prescription.php'">Add Prescription</button>
+        <button onclick="location.href='view_prescriptions.php'">View Prescriptions</button>
+    </div>
+
+    <!-- Billing Section -->
+    <div id="billing-section" class="section">
+        <button onclick="location.href='add_bill.php'">Add Payment</button>
+        <button onclick="location.href='view_bills.php'">View Bills</button>
     </div>
 </div>
 
 <script>
 function showSection(section) {
-    document.getElementById("patient-section").style.display = (section === 'patient') ? "block" : "none";
-    document.getElementById("appointment-section").style.display = (section === 'appointment') ? "block" : "none";
+    const sections = ['patient', 'appointment', 'prescription', 'billing'];
+    sections.forEach(sec => {
+        document.getElementById(sec + '-section').style.display = (section === sec) ? 'block' : 'none';
+    });
 }
 </script>
 
