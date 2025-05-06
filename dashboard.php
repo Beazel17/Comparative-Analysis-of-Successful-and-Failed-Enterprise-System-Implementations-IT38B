@@ -1,10 +1,7 @@
 <?php
-// Start the session
 session_start();
-
-// Check if the user is logged in
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: ../../index.php");
+    header("location: index.php");
     exit;
 }
 ?>
@@ -39,6 +36,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
             color: black;
             border: none;
             border-radius: 5px;
+            cursor: pointer;
         }
         .sidebar button:hover {
             background-color: #bbdefb;
@@ -67,14 +65,31 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         .action-buttons button:hover {
             background-color: #18ffff;
         }
+        .section {
+            margin-top: 30px;
+            text-align: center;
+            display: none;
+        }
+        .section button {
+            margin: 10px;
+            background-color: cyan;
+            color: black;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .section button:hover {
+            background-color: #00e5ff;
+        }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
     <h4 style="text-align: center;">MediCare</h4>
-    <button onclick="location.href='#'">Patient Management</button>
-    <button onclick="location.href='#'">Appointments</button>
+    <button onclick="showSection('patient')">Patient Management</button>
+    <button onclick="showSection('appointment')">Appointments</button>
     <button onclick="location.href='#'">Prescriptions</button>
     <button onclick="location.href='#'">Billing & Payments</button>
     <button onclick="location.href='logout.php'">Logout</button>
@@ -90,12 +105,27 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         </div>
     </div>
 
-    <div class="action-buttons text-center">
+    <!-- Patient Buttons -->
+    <div id="patient-section" class="section">
         <button onclick="location.href='add_patient.php'">Add Patient</button>
         <button onclick="location.href='view_patients.php'">View Patients</button>
         <button onclick="location.href='edit_delete_patient.php'">Edit/Delete Patient</button>
     </div>
+
+    <!-- Appointments Buttons -->
+    <div id="appointment-section" class="section">
+        <button onclick="location.href='schedule.php'">Schedule Appointment</button>
+        <button onclick="location.href='view_appointments.php'">View Appointments</button>
+        
+    </div>
 </div>
+
+<script>
+function showSection(section) {
+    document.getElementById("patient-section").style.display = (section === 'patient') ? "block" : "none";
+    document.getElementById("appointment-section").style.display = (section === 'appointment') ? "block" : "none";
+}
+</script>
 
 </body>
 </html>
