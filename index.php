@@ -17,7 +17,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                 header("location: nurse_dashboard.php");
                 exit;
             } elseif ($role === "user") {
-                header("location: user_dashboard.php");
+                header("location: patient_dashboard.php");
                 exit;
             }
         }
