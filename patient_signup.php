@@ -77,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Patient Sign Up</title>
+    <title>Patient Signup</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -87,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             justify-content: center;
             align-items: center;
         }
-        .login-container {
+        .signup-container {
             background: #fff;
             padding: 30px;
             border-radius: 10px;
@@ -109,34 +109,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h2 class="text-center">Sign Up</h2>
-    <form action="" method="post">
+<div class="signup-container">
+    <h2 class="text-center">Patient Signup</h2>
+    <form action="patient_register.php" method="post">
         <div class="form-group">
-            <label for="name">Full Name</label>
-            <input type="text" name="name" class="form-control" value="<?php echo htmlspecialchars($name); ?>">
-            <span class="text-danger"><?php echo $name_err; ?></span>
+            <label for="full_name">Full Name</label>
+            <input type="text" id="full_name" name="full_name" class="form-control" required>
         </div>
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($email); ?>">
-            <span class="text-danger"><?php echo $email_err; ?></span>
+            <input type="email" id="email" name="email" class="form-control" required>
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" name="password" class="form-control">
-            <span class="text-danger"><?php echo $password_err; ?></span>
-        </div>
-        <div class="form-group">
-            <label for="confirm_password">Confirm Password</label>
-            <input type="password" name="confirm_password" class="form-control">
-            <span class="text-danger"><?php echo $confirm_password_err; ?></span>
+            <input type="password" id="password" name="password" class="form-control" required>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
-        <p class="mt-3 text-center">
-            Already have an account? <a href="patient_login.php">Login here</a>.
-        </p>
     </form>
+    <p class="text-muted text-center">
+        Already have an account? <a href="patient_login.php">Log In</a>
+    </p>
 </div>
 </body>
 </html>
