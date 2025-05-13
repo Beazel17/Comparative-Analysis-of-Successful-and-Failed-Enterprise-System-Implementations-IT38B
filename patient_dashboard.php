@@ -3,7 +3,7 @@ session_start();
 
 // Check if the user is logged in
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: login.php");
+    header("location: patient_login.php");
     exit;
 }
 ?>
@@ -68,12 +68,11 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 </head>
 <body>
     <div class="sidebar">
-        <h2>MediCare</h2>
-        <a href="#">Book Appointment</a>
-        <a href="#">View Appointment History</a>
-        <a href="#">View Bills & Payments</a>
-        <a href="#">Edit Personal Info</a>
-        <a href="logout.php">Logout</a>
+        <h2>Welcome Patient</h2>
+        <a href="book_appointment.php">Book Appointment</a>
+        <a href="appointment_history.php">View Appointment History</a>
+        <a href="billing.php">Billing & Payments</a>
+        <a href="logout.php" class="text-danger">Logout</a>
     </div>
     <div class="main-content">
         <div class="top-bar">

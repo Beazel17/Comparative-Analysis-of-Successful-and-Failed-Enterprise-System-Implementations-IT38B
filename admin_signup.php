@@ -91,38 +91,55 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Sign Up</title>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<link rel="stylesheet" href="./css/register.css">
+    <meta charset="UTF-8">
+    <title>Patient Sign Up</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .signup-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        .btn-primary {
+            background: #5D9CEC;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: #4A89DC;
+        }
+    </style>
 </head>
 <body>
-<div class="wrapper">
-<h2>Sign Up</h2>
-<p>Please fill this form to create an account.</p>
-
-<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-    <div class="form-group">
-        <label>Email</label>
-        <input type="text" name="email" class="form-control <?php echo (!empty($email_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $email; ?>">
-        <span class="invalid-feedback"><?php echo $email_err; ?></span>
-    </div>    
-    <div class="form-group">
-        <label>Password</label>
-        <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>">
-        <span class="invalid-feedback"><?php echo $password_err; ?></span>
-    </div>
-    <div class="form-group">
-        <label>Confirm Password</label>
-        <input type="password" name="confirm_password" class="form-control <?php echo (!empty($confirm_password_err)) ? 'is-invalid' : ''; ?>">
-        <span class="invalid-feedback"><?php echo $confirm_password_err; ?></span>
-    </div>
-    <div class="form-group">
-        <input type="submit" class="btn btn-primary" value="Register" style="color: black;">
-    </div>
-    <p>Already have an account? <a href="login.php">Login here</a>.</p>
-   
-</form>
-</div>    
+<div class="signup-container">
+    <h2 class="text-center">Admin Sign Up</h2>
+    <form action="admin_register.php" method="post">
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+    </form>
+    <p class="text-muted text-center">
+        Already have an account? <a href="patient_login.php">Log In</a>
+    </p>
+</div>
 </body>
 </html>
