@@ -1,7 +1,7 @@
 <?php
 // Database configuration
 $host = "localhost";
-$db_name = "medicare2";
+$db_name = "medicare";
 $username = "root";
 $password = "";
 

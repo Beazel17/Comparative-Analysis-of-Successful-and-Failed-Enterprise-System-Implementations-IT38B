@@ -1,30 +1,37 @@
 <?php
-include 'db_connect.php';
+session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+// Initialize variables
+$email = $password = "";
+$email_err = $password_err = "";
 
-    // Fetch the user by email
-    $stmt = $conn->prepare("SELECT * FROM patients WHERE email = ?");
-    $stmt->bind_param('s', $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
+// Check if form was submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get and sanitize inputs
+    $email = trim($_POST["email"]);
+    $password = trim($_POST["password"]);
 
-    if ($result->num_rows === 1) {
-        $patient = $result->fetch_assoc();
-        if (password_verify($password, $patient['password'])) {
-            // Start a session and redirect to dashboard
-            session_start();
-            $_SESSION['patient_id'] = $patient['id'];
-            $_SESSION['patient_name'] = $patient['full_name'];
-            header('Location: patient_dashboard.php');
-            exit();
-        } else {
-            $error = "Invalid email or password.";
-        }
-    } else {
-        $error = "Invalid email or password.";
+    // Validate credentials
+    if (empty($email)) {
+        $email_err = "Please enter your email.";
+    } elseif ($email !== "admin@gmail.com") {
+        $email_err = "Email not recognized.";
+    }
+
+    if (empty($password)) {
+        $password_err = "Please enter your password.";
+    } elseif ($password !== "admin123123") {
+        $password_err = "Incorrect password.";
+    }
+
+    // If no errors, log the user in
+    if (empty($email_err) && empty($password_err)) {
+        // Set session variables
+        $_SESSION["admin_logged_in"] = true;
+        $_SESSION["admin_email"] = $email;
+        $_SESSION["role"] = "admin";  // Setting the user role as admin
+        header("Location: admin_dashboard.php");
+        exit;
     }
 }
 ?>
@@ -33,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Patient Login</title>
+    <title>Admin Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -67,19 +74,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 <div class="login-container">
     <h2 class="text-center">Admin Login</h2>
-    <form action="admin_dashboard.php" method="post">
+    <form action="admin_login.php" method="post" novalidate>
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" class="form-control" required>
+            <input type="email" id="email" name="email"
+                   class="form-control <?php echo (!empty($email_err)) ? 'is-invalid' : ''; ?>"
+                   value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>" required>
+            <span class="invalid-feedback"><?php echo $email_err; ?></span>
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" class="form-control" required>
+            <input type="password" id="password" name="password"
+                   class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>" required>
+            <span class="invalid-feedback"><?php echo $password_err; ?></span>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Login</button>
     </form>
     <p class="text-muted text-center">
-        Don't have an account? <a href="patient_signup.php">Sign Up</a>
+        Go back to <a href="index.php">Home</a>
     </p>
 </div>
 </body>
