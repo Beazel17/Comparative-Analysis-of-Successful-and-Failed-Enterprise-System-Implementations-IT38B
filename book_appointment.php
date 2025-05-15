@@ -16,12 +16,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $reason = $_POST["reason"];
     $user_id = $_SESSION["id"];
 
-    $sql = "INSERT INTO appointments (user_id, date, time, doctor_name, reason) VALUES (:user_id, :date, :time, :doctor_name, :reason)";
+    // Combine date and time into a single datetime
+    $appointment_date = date("Y-m-d H:i:s", strtotime("$date $time"));
+
+    $sql = "INSERT INTO appointments (user_id, appointment_date, doctor_name, reason) VALUES (:user_id, :appointment_date, :doctor_name, :reason)";
 
     if ($stmt = $pdo->prepare($sql)) {
         $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
-        $stmt->bindParam(":date", $date, PDO::PARAM_STR);
-        $stmt->bindParam(":time", $time, PDO::PARAM_STR);
+        $stmt->bindParam(":appointment_date", $appointment_date, PDO::PARAM_STR);
         $stmt->bindParam(":doctor_name", $doctor_name, PDO::PARAM_STR);
         $stmt->bindParam(":reason", $reason, PDO::PARAM_STR);
 

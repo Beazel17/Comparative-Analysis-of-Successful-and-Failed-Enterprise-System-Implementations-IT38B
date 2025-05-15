@@ -1,28 +1,37 @@
 <?php
 session_start();
+require_once "./data/config.php";
 
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] != "nurse") {
     header("location: nurse_login.php");
     exit;
 }
 
-require_once "./data/config.php";
+$nurse_id = $_SESSION["id"]; // FIXED HERE
+$full_name = $_SESSION["full_name"] ?? "Nurse";
 
-$nurse_id = $_SESSION["id"];
-$full_name = $_SESSION["full_name"];
-
-// Fetch patients (optionally filter by nurse_id)
-$sql = "SELECT * FROM patients";
+// Get assigned patients
+$sql = "SELECT * FROM patients WHERE assigned_nurse_id = :nurse_id";
 $stmt = $pdo->prepare($sql);
+$stmt->bindParam(":nurse_id", $nurse_id, PDO::PARAM_INT);
 $stmt->execute();
 $patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch prescriptions per patient
+$prescriptions = [];
+foreach ($patients as $patient) {
+    $sql = "SELECT * FROM prescriptions WHERE patient_id = :patient_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(":patient_id", $patient['id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $prescriptions[$patient['id']] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nurse Dashboard - MediCare</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
@@ -102,30 +111,36 @@ $patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <table class="table table-bordered table-striped mt-3">
                 <thead class="thead-dark">
                     <tr>
-                        <th>ID</th>
-                        <th>Full Name</th>
+                        <th>Name</th>
                         <th>Email</th>
-                        <th>Actions</th>
+                        <th>View Prescriptions</th>
+                        <th>Update Patient Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($patients as $patient): ?>
                         <tr>
-                            <td><?= $patient['id']; ?></td>
                             <td><?= htmlspecialchars($patient['full_name']); ?></td>
                             <td><?= htmlspecialchars($patient['email']); ?></td>
                             <td>
-                                <a href="edit_vitals.php?patient_id=<?= $patient['id']; ?>" class="btn btn-sm btn-warning">Vitals/Notes</a>
-                                <a href="view_appointments.php?patient_id=<?= $patient['id']; ?>" class="btn btn-sm btn-info">Appointments</a>
-                                <a href="view_prescriptions.php?patient_id=<?= $patient['id']; ?>" class="btn btn-sm btn-success">Prescriptions</a>
-                                <a href="update_status.php?patient_id=<?= $patient['id']; ?>" class="btn btn-sm btn-primary">Update Status</a>
+                                <a class="btn btn-sm btn-success" href="view_prescriptions.php?patient_id=<?= $patient['id']; ?>">View</a>
                             </td>
+                            <td>
+                                <a class="btn btn-sm btn-primary" href="update_patient_status.php?patient_id=<?= $patient['id']; ?>">Update Status</a>
+                            </td>
+                            <td>
+    <a class="btn btn-sm btn-success" href="view_prescriptions.php?patient_id=<?= $patient['id']; ?>">View</a>
+</td>
+<td>
+    <a class="btn btn-sm btn-primary" href="update_patient_status.php?patient_id=<?= $patient['id']; ?>">Update Status</a>
+</td>
+
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
         <?php else: ?>
-            <p class="text-muted">No patients assigned yet.</p>
+            <p class="text-muted">No patients assigned to you yet.</p>
         <?php endif; ?>
     </div>
 </div>

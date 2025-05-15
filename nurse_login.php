@@ -39,12 +39,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $hashed_password = $row["password"];
 
                         if (password_verify($password, $hashed_password)) {
-                            // Create session variables
+                            // Set session variables
                             $_SESSION["loggedin"] = true;
                             $_SESSION["id"] = $id;
                             $_SESSION["full_name"] = $full_name;
+                            $_SESSION["role"] = "nurse"; // ✅ REQUIRED
 
-                            // Redirect to dashboard
+                            // Redirect to nurse dashboard
                             header("location: nurse_dashboard.php");
                             exit;
                         } else {

@@ -8,18 +8,18 @@ if (!isset($_SESSION["admin_logged_in"]) || $_SESSION["role"] !== 'admin') {
     exit();
 }
 
-// Fetch user data
-$query = "SELECT id, full_name, email, role FROM users";
+// Fetch patient data
+$query = "SELECT id, full_name, age, gender, contact, address FROM patients";
 $stmt = $pdo->prepare($query);
 $stmt->execute();
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Management - Admin Panel - MediCare</title>
+    <title>Patient Management - Admin Panel - MediCare</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -84,7 +84,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <h2>Admin Panel</h2>
         <a href="user_management.php" class="<?= basename($_SERVER['PHP_SELF']) == 'user_management.php' ? 'active' : '' ?>">User Management</a>
         <a href="patient_management.php" class="<?= basename($_SERVER['PHP_SELF']) == 'patient_management.php' ? 'active' : '' ?>">Patient Management</a>
-        <a href="admin_appointment.php" class="<?= basename($_SERVER['PHP_SELF']) == 'admin_appointment.php' ? 'active' : '' ?>">Appointments</a>
+        <a href="appointments.php" class="<?= basename($_SERVER['PHP_SELF']) == 'appointments.php' ? 'active' : '' ?>">Appointments</a>
         <a href="prescriptions.php" class="<?= basename($_SERVER['PHP_SELF']) == 'prescriptions.php' ? 'active' : '' ?>">Prescriptions</a>
         <a href="billing.php" class="<?= basename($_SERVER['PHP_SELF']) == 'billing.php' ? 'active' : '' ?>">Billing & Payments</a>
         <a href="reports.php" class="<?= basename($_SERVER['PHP_SELF']) == 'reports.php' ? 'active' : '' ?>">System Reports</a>
@@ -96,22 +96,27 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <div class="main-content">
-        <h3>User Management</h3>
+        <h3>Patient Management</h3>
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Full Name</th>
-                    <th>Email</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Contact</th>
+                    <th>Address</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($users as $user): ?>
+                <?php foreach ($patients as $patient): ?>
                     <tr>
-                        <td><?= htmlspecialchars($user['id']) ?></td>
-                        <td><?= htmlspecialchars($user['full_name']) ?></td>
-                        <td><?= htmlspecialchars($user['email']) ?></td>
-                        
+                        <td><?= htmlspecialchars($patient['id']) ?></td>
+                        <td><?= htmlspecialchars($patient['full_name']) ?></td>
+                        <td><?= htmlspecialchars($patient['age']) ?></td>
+                        <td><?= htmlspecialchars($patient['gender']) ?></td>
+                        <td><?= htmlspecialchars($patient['contact']) ?></td>
+                        <td><?= htmlspecialchars($patient['address']) ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
