@@ -1,25 +1,40 @@
 <?php
 session_start();
-require_once "./data/config.php";
+require_once '../data/config.php';
 
-// Ensure only admin can access
-if (!isset($_SESSION["admin_logged_in"]) || $_SESSION["role"] !== 'admin') {
+// Check if admin is logged in
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION["role"] !== "admin") {
     header("Location: admin_login.php");
-    exit();
+    exit;
 }
 
-// Fetch user data
-$query = "SELECT id, full_name, email, role FROM users";
-$stmt = $pdo->prepare($query);
-$stmt->execute();
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Admin full name
+$admin_name = $_SESSION["full_name"];
+
+// Dummy statistics — replace with actual queries
+try {
+    // Count users (nurses + admins)
+    $stmt = $pdo->query("SELECT 
+                            (SELECT COUNT(*) FROM nurses) + 
+                            (SELECT COUNT(*) FROM admins) 
+                         AS total_users");
+    $row = $stmt->fetch();
+    $total_users = $row ? $row['total_users'] : 0;
+
+    // Count appointments (assuming an 'appointments' table exists)
+    $stmt = $pdo->query("SELECT COUNT(*) AS total_appointments FROM appointments");
+    $row = $stmt->fetch();
+    $total_appointments = $row ? $row['total_appointments'] : 0;
+} catch (Exception $e) {
+    $total_users = $total_appointments = 0;
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Management - Admin Panel - MediCare</title>
+    <title>Admin Dashboard - MediCare</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -65,57 +80,30 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .logout-link {
             color: #ff4d4d !important;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
         <h2>Admin Panel</h2>
-        <a href="user_management.php" class="<?= basename($_SERVER['PHP_SELF']) == 'user_management.php' ? 'active' : '' ?>">User Management</a>
         <a href="patient_management.php" class="<?= basename($_SERVER['PHP_SELF']) == 'patient_management.php' ? 'active' : '' ?>">Patient Management</a>
-        <a href="admin_appointment.php" class="<?= basename($_SERVER['PHP_SELF']) == 'admin_appointment.php' ? 'active' : '' ?>">Appointments</a>
+        <a href="appointment.php" class="<?= basename($_SERVER['PHP_SELF']) == 'admin_appointment.php' ? 'active' : '' ?>">Appointments</a>
         <a href="prescriptions.php" class="<?= basename($_SERVER['PHP_SELF']) == 'prescriptions.php' ? 'active' : '' ?>">Prescriptions</a>
-        <a href="billing.php" class="<?= basename($_SERVER['PHP_SELF']) == 'billing.php' ? 'active' : '' ?>">Billing & Payments</a>
-        <a href="reports.php" class="<?= basename($_SERVER['PHP_SELF']) == 'reports.php' ? 'active' : '' ?>">System Reports</a>
+        
+        <a href="reports.php" class="<?= basename($_SERVER['PHP_SELF']) == 'reports.php' ? 'active' : '' ?>">Reports</a>
         <a href="logout.php" class="logout-link">Logout</a>
     </div>
 
     <div class="topbar">
-        <div>Welcome, Admin</div>
+        <div>Welcome, <?= htmlspecialchars($admin_name) ?></div>
     </div>
 
     <div class="main-content">
-        <h3>User Management</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Full Name</th>
-                    <th>Email</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($users as $user): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($user['id']) ?></td>
-                        <td><?= htmlspecialchars($user['full_name']) ?></td>
-                        <td><?= htmlspecialchars($user['email']) ?></td>
-                        
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <h3>Dashboard Overview</h3>
+        <p><strong>Total Users:</strong> <?= $total_users ?></p>
+        <p><strong>Total Appointments:</strong> <?= $total_appointments ?></p>
+        <hr>
+        <p>Select a section from the sidebar to manage the system.</p>
     </div>
 
 </body>
