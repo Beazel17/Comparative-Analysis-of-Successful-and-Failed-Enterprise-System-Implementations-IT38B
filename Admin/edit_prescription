@@ -1,0 +1,177 @@
+<?php
+session_start();
+require_once '../data/config.php';
+
+// Check if admin is logged in
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION["role"] !== "admin") {
+    header("Location: admin_login.php");
+    exit;
+}
+
+// Admin full name
+$admin_name = $_SESSION["full_name"];  // Retrieve the admin name from session
+$admin_id = $_SESSION["id"]; // Assuming admin's ID is stored in session
+
+// Check if the ID is passed in the URL
+if (isset($_GET['id'])) {
+    $prescription_id = $_GET['id'];
+
+    // Fetch the prescription details to edit
+    $stmt = $pdo->prepare("SELECT * FROM prescriptions WHERE id = ?");
+    $stmt->execute([$prescription_id]);
+    $prescription = $stmt->fetch();
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        // Get the updated data
+        $patient_id = $_POST['patient_id'];
+        $medication_name = $_POST['medication_name'];
+        $dosage = $_POST['dosage'];
+        $frequency = $_POST['frequency'];
+        $duration = $_POST['duration'];
+        $instructions = $_POST['instructions'];
+        $pharmacy_info = $_POST['pharmacy_info'];
+
+        // Update the prescription
+        $stmt = $pdo->prepare("UPDATE prescriptions SET 
+            patient_id = ?, medication_name = ?, dosage = ?, frequency = ?, duration = ?, instructions = ?, pharmacy_info = ? 
+            WHERE id = ?");
+        $stmt->execute([$patient_id, $medication_name, $dosage, $frequency, $duration, $instructions, $pharmacy_info, $prescription_id]);
+
+        header("Location: prescriptions.php?message=Prescription%20updated%20successfully");
+        exit;
+    }
+} else {
+    header("Location: prescriptions.php");
+    exit;
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Prescription - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+        }
+        .sidebar {
+            width: 220px;
+            height: 100vh;
+            position: fixed;
+            background-color: #002244;
+            color: white;
+            padding-top: 20px;
+        }
+        .sidebar h2 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 12px 20px;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #004080;
+        }
+        .topbar {
+            margin-left: 220px;
+            background-color: #004080;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .main-content {
+            margin-left: 220px;
+            padding: 30px;
+        }
+        .logout-link {
+            color: #ff4d4d !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <a href="patient_management.php" class="<?= basename($_SERVER['PHP_SELF']) == 'patient_management.php' ? 'active' : '' ?>">Patient Management</a>
+        <a href="appointment.php" class="<?= basename($_SERVER['PHP_SELF']) == 'admin_appointment.php' ? 'active' : '' ?>">Appointments</a>
+        <a href="prescriptions.php" class="<?= basename($_SERVER['PHP_SELF']) == 'prescriptions.php' ? 'active' : '' ?>">Prescriptions</a>
+        <a href="billing.php" class="<?= basename($_SERVER['PHP_SELF']) == 'billing.php' ? 'active' : '' ?>">Billing & Payments</a>
+        <a href="reports.php" class="<?= basename($_SERVER['PHP_SELF']) == 'reports.php' ? 'active' : '' ?>"> Reports</a>
+        <a href="logout.php" class="logout-link">Logout</a>
+    </div>
+
+    <!-- Topbar -->
+    <div class="topbar">
+        <div>Welcome, <?= htmlspecialchars($admin_name) ?></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h3>Edit Prescription</h3>
+
+        <!-- Form to edit prescription -->
+        <form action="edit_prescription.php?id=<?= $prescription['id'] ?>" method="POST">
+            <div class="form-group">
+                <label for="patient_id">Select Patient</label>
+                <select class="form-control" id="patient_id" name="patient_id" required>
+                    <option value="">Select Patient</option>
+                    <?php
+                    // Fetch all patients for the dropdown
+                    $stmt = $pdo->query("SELECT id, full_name FROM patients");
+                    $patients = $stmt->fetchAll();
+                    foreach ($patients as $patient) {
+                        $selected = ($prescription['patient_id'] == $patient['id']) ? 'selected' : '';
+                        echo "<option value=\"{$patient['id']}\" $selected>{$patient['full_name']}</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="medication_name">Medication Name</label>
+                <input type="text" class="form-control" id="medication_name" name="medication_name" value="<?= $prescription['medication_name'] ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="dosage">Dosage</label>
+                <input type="text" class="form-control" id="dosage" name="dosage" value="<?= $prescription['dosage'] ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="frequency">Frequency</label>
+                <input type="text" class="form-control" id="frequency" name="frequency" value="<?= $prescription['frequency'] ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="duration">Duration</label>
+                <input type="text" class="form-control" id="duration" name="duration" value="<?= $prescription['duration'] ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="instructions">Instructions</label>
+                <textarea class="form-control" id="instructions" name="instructions"><?= $prescription['instructions'] ?></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="pharmacy_info">Pharmacy Information</label>
+                <textarea class="form-control" id="pharmacy_info" name="pharmacy_info"><?= $prescription['pharmacy_info'] ?></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Prescription</button>
+            <a href="prescriptions.php" class="btn btn-secondary">Cancel Edit</a>
+        </form>
+    </div>
+
+</body>
+</html>
